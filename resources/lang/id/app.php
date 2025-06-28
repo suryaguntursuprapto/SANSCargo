@@ -1,0 +1,26 @@
+<?php
+return [
+    "welcome" => "Selamat Datang di CSM Cargo",
+    "dashboard" => "Dasbor",
+    "profile" => "Profil",
+    "edit_profile" => "Edit Profil",
+    "change_password" => "Ubah Password",
+    "logout" => "Keluar",
+    "login" => "Masuk",
+    "register" => "Daftar",
+    "view_website" => "Lihat Website",
+    "shipment" => "Pengiriman",
+    "create_shipment" => "Buat Pengiriman",
+    "create_new_shipment" => "Buat Pengiriman Baru",
+    "manual" => "Manual",
+    "import" => "Impor",
+    "shipping_calculator" => "Kalkulator Pengiriman",
+    "shipment_list" => "Daftar Pengiriman",
+    "shipped" => "Dikirim",
+    "received" => "Diterima",
+    "returned" => "Dikembalikan",
+    "shipment_requests" => "Permintaan Pengiriman",
+    "completed" => "Selesai",
+    "transaction" => "Transaksi",
+    "settings" => "Pengaturan"
+];
