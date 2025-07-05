@@ -4,6 +4,22 @@
 <div class="container mx-auto">
     @include('layouts.pengiriman.navkirimmanual')
 
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white rounded-md shadow-sm overflow-hidden">
         <div class="border-l-4 border-green-500 p-4">
             <h2 class="text-xl font-medium text-gray-800">Buat Pengiriman Baru</h2>
@@ -36,6 +52,7 @@
                                 <input type="checkbox"
                                        name="setuju"
                                        value="1"
+                                       id="setuju-checkbox"
                                        class="h-4 w-4 text-green-500 focus:ring-green-400"
                                        required>
                                 <span class="ml-2">Saya telah membaca dan menyetujui syarat & ketentuan</span>
@@ -44,7 +61,8 @@
                     </div>
                     
                     <div class="flex justify-between mt-8">
-                        <a href="{{ route('pengiriman.pembayaran.create', ['id' => $pengiriman->id]) }}" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm flex items-center">
+                        <a href="{{ route('pengiriman.pembayaran.create', ['id' => $pengiriman->id]) }}" 
+                           class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md text-sm flex items-center">
                             <i class="fas fa-arrow-left mr-2"></i> Kembali
                         </a>
                         
@@ -62,19 +80,13 @@
                             </button>
                             
                             <button type="button"
-                                    id="request-btn"
-                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
-                                Request
+                                    id="review-btn"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
+                                Review
                             </button>
                         </div>
                     </div>
                 </div>
-            </form>
-            
-            <!-- Hidden form for request -->
-            <form id="requestForm" action="{{ route('pengiriman.request') }}" method="POST" class="hidden">
-                @csrf
-                <input type="hidden" name="pengiriman_id" value="{{ $pengiriman->id }}">
             </form>
             
             <!-- Hidden form for cancel -->
@@ -129,29 +141,30 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const catatanForm = document.getElementById('catatanForm');
+    const setujuCheckbox = document.getElementById('setuju-checkbox');
+    
     // Submit as draft
     document.getElementById('simpan-draft-btn').addEventListener('click', function() {
-        const form = document.getElementById('catatanForm');
-        form.action = '{{ route("pengiriman.simpan-draft") }}';
-        form.submit();
+        // Remove required from checkbox for draft
+        setujuCheckbox.removeAttribute('required');
+        catatanForm.action = '{{ route("pengiriman.simpan-draft") }}';
+        catatanForm.submit();
     });
     
-    // Submit as request
-    document.getElementById('request-btn').addEventListener('click', function() {
+    // Go to review page
+    document.getElementById('review-btn').addEventListener('click', function() {
         // Check if terms are accepted
-        const termsAccepted = document.querySelector('input[name="setuju"]').checked;
+        const termsAccepted = setujuCheckbox.checked;
         
         if (termsAccepted) {
-            // First save the notes
-            const form = document.getElementById('catatanForm');
-            form.submit();
-            
-            // Then submit the request form
-            setTimeout(function() {
-                document.getElementById('requestForm').submit();
-            }, 500);
+            // Make sure checkbox is required for normal submit
+            setujuCheckbox.setAttribute('required', 'required');
+            // Submit form to save catatan and redirect to review
+            catatanForm.submit();
         } else {
             alert('Anda harus menyetujui syarat dan ketentuan terlebih dahulu.');
+            setujuCheckbox.focus();
         }
     });
     
@@ -168,6 +181,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Modal confirm cancel
     document.getElementById('confirmCancel').addEventListener('click', function() {
         document.getElementById('cancelForm').submit();
+    });
+    
+    // Prevent multiple form submissions
+    catatanForm.addEventListener('submit', function() {
+        const submitButtons = document.querySelectorAll('#simpan-draft-btn, #review-btn');
+        submitButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.textContent = 'Memproses...';
+        });
     });
 });
 </script>

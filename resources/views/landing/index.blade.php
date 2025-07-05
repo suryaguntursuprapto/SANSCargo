@@ -31,7 +31,7 @@
                         <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                             <i class="fas fa-shipping-fast text-white text-lg"></i>
                         </div>
-                        <span class="text-2xl font-bold text-gray-900">CCM Cargo</span>
+                        <span class="text-2xl font-bold text-gray-900">SANS Cargo</span>
                     </div>
                 </div>
 
